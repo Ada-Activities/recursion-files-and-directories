@@ -83,6 +83,48 @@ print_dirs(my_dir)
 # journey
 
 #
+# Minor tangent, a reusable traversal function
+##############################################
+
+# The core logic of iterating through the children of a directory and applying
+# some operation to each item in the collection can be generalized into a
+# function responsible only for the traversal of the structure, which accepts
+# another function containing the work to do for each item as another
+# parameter.
+
+def tree_traverse(file, op=lambda f: print(f.name)):
+    # Perform some operation on each item (this is called "visiting" the item).
+    # By default, print the name of the item.
+    op(file)
+
+    # Traverse through the rest of the structure. Notice this captures the
+    # shared logic from the two previous functions
+    if file.is_dir:
+        for child in file.files:
+            tree_traverse(child, op)  # be sure to pass the operation along!
+
+print("== tree_traverse: all ==")
+tree_traverse(my_dir)
+
+# A function that encapsulates the logic of printing only if the item is a file
+def print_if_file(f):
+    if not f.is_dir:
+        print(f.name)
+
+# produces the same output as print_files
+print("== tree_traverse: files only ==")
+tree_traverse(my_dir, op=print_if_file)
+
+# A function that encapsulates the logic of printing only if the item is a directory
+def print_if_dir(f):
+    if f.is_dir:
+        print(f.name)
+
+# produces the same output as print_dirs
+print("== tree_traverse: dirs only ==")
+tree_traverse(my_dir, op=print_if_dir)
+
+#
 # CHALLENGING QUESTION
 #############################
 
