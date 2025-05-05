@@ -145,6 +145,50 @@ def print_indented(file, depth=0):
 print("== print_indented ==")
 print_indented(my_dir)
 
+#
+# Minor tangent 2, check whether a file exists
+##############################################
+
+# Given the a file location to start searching from, return True if we
+# can find a file with the specified name in the file system, otherwise
+# return False.
+#
+# Returning a value requires a bit of care compared to the examples
+# we've seen in Learn, which mostly either had a single base case, and
+# a single recursive case. This got us into the mode of directly returning
+# the result of the recursive call. But here, we have as many potential
+# recursive calls as a folder has children. So instead, we need to inspect
+# the result of each recursive call to see whether the file has been found.
+# If the file has been found, we can immediately return `True`, but if we
+# found it yet, then we need to continue processing the remaining children.
+
+def has_file(file, name):
+    # Check whether this file is the one we were looking for
+    if file.name == name:
+        return True
+
+    # It wasn't, and if it has no children (isn't a directory), then we can
+    # tell the caller the file we're looking for isn't here.
+    if not file.is_dir:
+        return False
+
+    # It has children, so check each child to see whether the file can be
+    # found there.
+    for child in file.files:
+        # As soon as we find the file, we can tell the caller that we found it.
+        if has_file(child, name):
+            return True
+
+    # We didn't find the file in any of the children, so now we can tell the
+    # caller that the file wasn't here.
+    return False
+
+print("== has_file ==")
+print(has_file(my_dir, "fortune"))  # True
+print(has_file(my_dir, "blanket"))  # True
+print(has_file(my_dir, "explore"))  # True
+print(has_file(my_dir, "not found"))  # False
+
 # should print
 # root
 #     almonds
